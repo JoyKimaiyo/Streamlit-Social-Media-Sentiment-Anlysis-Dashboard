@@ -2,4 +2,4 @@ streamlit
 pandas
 plotly
 wordcloud
-python-dotenv  # Optional (for environment variables)
+python-dotenv  # Optional (for environment variables)g

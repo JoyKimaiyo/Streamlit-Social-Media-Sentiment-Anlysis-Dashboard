@@ -3,6 +3,7 @@ import streamlit as st
 from wordcloud import WordCloud
 import plotly.express as px
 import plotly.graph_objects as go
+import os
 
 # Set up Dashboard
 st.title("Social Media Sentiments Analysis Dashboard")
@@ -10,14 +11,27 @@ st.text("Sentiment analysis is the process of analyzing large volumes of text to
 st.sidebar.title("Social Media Sentiments Analysis")
 
 # File Path
-csv_path = "/home/joy/Documents/media/sentimentdataset.csv"
+if "STREAMLIT_ENV" in os.environ:  # Custom env variable for Streamlit Cloud
+    csv_path = "/mount/src/sentimentdataset.csv"  # Adjust based on deployment path
+else:
+    csv_path = "/home/joy/Documents/media/sentimentdataset.csv"
 
-# Load Data
+if os.path.exists(csv_path):
+    df = pd.read_csv(csv_path, encoding="utf-8")
+else:
+    st.error("CSV file not found. Please upload one.")
+    
+st.write(f"Checking file path: {csv_path}")
+
+
+
 @st.cache_data
 def load_data():
-    df = pd.read_csv(csv_path, encoding="utf-8")
-    df["Platform"] = df["Platform"].str.title()  # Normalize case
-    return df
+    if not os.path.exists(csv_path):
+        st.error(f"File not found: {csv_path}")
+        return pd.DataFrame()  # Return an empty DataFrame to prevent crashes
+    return pd.read_csv(csv_path, encoding="utf-8")
+
 
 df = load_data()
 
